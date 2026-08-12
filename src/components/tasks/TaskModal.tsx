@@ -29,7 +29,14 @@ export function TaskModal({ isOpen, onClose, task, onSave }: TaskModalProps) {
         setStatus(task.status);
         setPriority(task.priority);
         setDueDate(task.dueDate || "");
+      } else {
+        setTitle("");
+        setDescription("");
+        setStatus("todo");
+        setPriority("medium");
+        setDueDate("");
       }
+      setErrors({});
       setSubmitting(false);
     }
   }, [isOpen, task]);
