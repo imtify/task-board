@@ -1,55 +1,97 @@
 # Task Board
 
-A small task manager (mini Trello/Todo) built with Next.js.
+A premium task manager (mini Trello/Todo) built with Next.js 16 and Tailwind CSS 4.
 
-> Status: project scaffolding only. Features (task list, create/edit form,
-> delete, filter/search, persistence) are being added incrementally — see
-> commit history.
+This project is built incrementally with structured commits to demonstrate clean folder structure, separation of concerns, TypeScript compliance, and robust error handling.
 
 ## Tech Stack
 
-- Next.js 16 (App Router, Turbopack)
-- React 19
-- TypeScript
-- Tailwind CSS v4
-- ESLint
+- **Framework**: Next.js 16 (App Router, Turbopack)
+- **Library**: React 19 (Functional components + hooks only)
+- **Styling**: Tailwind CSS 4 & Vanilla CSS variables
+- **Icons**: Lucide React
+- **Testing**: Vitest (Unit tests)
+- **Language**: TypeScript (Strict typing)
+
+## Features Implemented
+
+### Core Features
+1. **Task List Page (`/`)**: Displays all tasks in a highly responsive cards grid.
+2. **Badge Metadata**: Colored badges showing task Status (`To Do`, `In Progress`, `Done`) and Priority (`Low`, `Medium`, `High`). Overdue dates are highlighted.
+3. **Task Creation**: Combined modal form with validation (title is required, min 3 characters; description, status, priority, and due dates are customizable).
+4. **Task Editing**: Allows live updating of all fields in any existing task, persisting on save.
+5. **Task Deletion**: Allows deleting tasks. Features an interactive Confirm dialog overlay before deletion.
+6. **Filter & Search**:
+   - Filter tasks by status tab choices (All, To Do, In Progress, Done).
+   - Case-insensitive search of tasks by title.
+7. **Persistence**:
+   - Data persists across server restarts and page refreshes. Backed by local JSON file storage (`data/tasks.json`) accessed via server API endpoints.
+
+### Bonus Features
+- **Sorting**: Multi-parameter sorting support (by Date Created, Due Date, or Priority rank) with order toggles (ascending/descending).
+- **Responsive Layout**: Designed for mobile devices and high-DPI monitors.
+- **Dark Mode**: Integrated manual Light/Dark mode switcher with localStorage persistence and page-load flash prevention.
+- **Empty / Loading States**: Displays loading skeletons during API interactions and responsive illustrations when search returns no matching tasks.
+- **Unit Tests**: Full unit test coverage of utility functions using Vitest.
 
 ## Project Structure
 
 ```
-src/
-  app/            # routes (App Router)
-    api/tasks/     # API route(s) for task CRUD (to be added)
-  components/
-    tasks/        # task-specific components (list, card, form, filters)
-    ui/           # small reusable UI primitives (button, badge, modal, etc.)
-  lib/            # constants, helpers, data access
-  types/          # shared TypeScript types (Task, TaskStatus, TaskPriority)
+task-board/
+├── data/
+│   └── tasks.json            # Local JSON database storage
+├── src/
+│   ├── app/                  # routes (Next.js App Router)
+│   │   ├── api/
+│   │   │   └── tasks/
+│   │   │       ├── route.ts         # GET & POST routes
+│   │   │       └── [id]/
+│   │   │           └── route.ts     # PUT & DELETE routes
+│   │   ├── globals.css       # Tailwind 4 and color scheme configuration
+│   │   └── layout.tsx        # Shell layout & dark mode flash prevention script
+│   ├── components/
+│   │   ├── tasks/
+│   │   │   ├── FilterBar.tsx # Title search, status tabs, sorting select controls
+│   │   │   ├── TaskCard.tsx  # Individual task renderer with overdue checks
+│   │   │   └── TaskModal.tsx # Dual-purpose create and edit task form
+│   │   └── ui/
+│   │       ├── Badge.tsx     # Colored labels component
+│   │       ├── ConfirmDialog.tsx # Deletion warning overlay dialog
+│   │       ├── Modal.tsx     # Generic popup container (handles Esc key, click-outside)
+│   │       └── ThemeToggle.tsx   # Light/Dark mode reactive button
+│   ├── lib/
+│   │   ├── constants.ts      # Shared status/priority config options & badge styling
+│   │   ├── db.ts             # Local JSON file read/write database layer
+│   │   └── taskUtils.ts      # Reusable business logic (overdue & sorting calculations)
+│   └── types/
+│       └── task.ts           # Types for Task, TaskInput, Statuses, Priorities
 ```
 
 ## Getting Started
 
+### 1. Install Dependencies
 ```bash
 npm install
-npm run dev
 ```
 
-Open http://localhost:3000.
+### 2. Start the Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Assumptions / Notes
+### 3. Run Unit Tests
+```bash
+npm run test
+```
 
-- Data will be stored via Next.js API routes backed by an in-memory
-  array (no external database), per the assignment's "no real database
-  needed" note.
-- Dropped `next/font/google` in favor of a system font stack to avoid a
-  network dependency during build.
+### 4. Build for Production
+```bash
+npm run build
+```
 
-## Roadmap (in progress)
+## Assumptions & Notes
 
-- [ ] Task List page (grid/list with status + priority badges)
-- [ ] Create Task form with validation
-- [ ] Edit Task
-- [ ] Delete Task with confirmation
-- [ ] Filter by status + search by title
-- [ ] Persistence via API routes + in-memory store
-- [ ] Bonus: sorting, empty/loading states, dark mode toggle, responsive design
+1. **Storage Choice**: We used a local JSON file database (`data/tasks.json`) on the server. If this file does not exist, it is auto-generated with mock seed data, making it instant to run and test locally.
+2. **Next.js 15/16 App Router Dynamic Params**: In Next.js 15+, dynamic route params (like `params` inside route handlers) are Promise-wrapped. We correctly typed and awaited `params` in `src/app/api/tasks/[id]/route.ts`.
+3. **Tailwind 4 Class-Based Dark Mode**: Used the custom `@variant dark (&:where(.dark, .dark *));` directive to link Tailwind 4's dark class toggle utility to class names rather than media queries.
