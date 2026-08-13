@@ -25,7 +25,7 @@ This project is built incrementally with structured commits to demonstrate clean
    - Filter tasks by status tab choices (All, To Do, In Progress, Done).
    - Case-insensitive search of tasks by title.
 7. **Persistence**:
-   - Data persists across server restarts and page refreshes. Backed by local JSON file storage (`data/tasks.json`) accessed via server API endpoints.
+   - Data persists across server restarts and page refreshes **in local development**, backed by a local JSON file (`data/tasks.json`) accessed via server API endpoints. See the note on deployed persistence below.
 
 ### Bonus Features
 - **Sorting**: Multi-parameter sorting support (by Date Created, Due Date, or Priority rank) with order toggles (ascending/descending).
@@ -95,3 +95,4 @@ npm run build
 1. **Storage Choice**: We used a local JSON file database (`data/tasks.json`) on the server. If this file does not exist, it is auto-generated with mock seed data, making it instant to run and test locally.
 2. **Next.js 15/16 App Router Dynamic Params**: In Next.js 15+, dynamic route params (like `params` inside route handlers) are Promise-wrapped. We correctly typed and awaited `params` in `src/app/api/tasks/[id]/route.ts`.
 3. **Tailwind 4 Class-Based Dark Mode**: Used the custom `@variant dark (&:where(.dark, .dark *));` directive to link Tailwind 4's dark class toggle utility to class names rather than media queries.
+4. **Deployed (Vercel) Persistence Limitation**: The JSON file store works reliably in local development, but Vercel's serverless functions run on a read-only filesystem — writes (create/edit/delete) do not persist on the live demo between requests. This is a known constraint of file-based storage on serverless platforms, not a bug. A production deployment would swap this for a real database (e.g. Postgres/Supabase) or client-side `localStorage`, both of which the assignment allows as acceptable storage options.
